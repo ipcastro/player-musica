@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/cadastro-principal.css" />
+    <link rel="stylesheet" href="/css/lista-musicas.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <script src="/js/select-filtro.js"></script>
+    <title>Lista de Músicas</title>
+  </head>
+  <body>
+    <main>
+      <section class="lista-musicas">
+        <h1>Lista de Músicas</h1>
+        <div class="busca">
+          <input
+            type="search"
+            id="busca-musica"
+            placeholder="Buscar música..."
+          />
+        </div>
+        <div class="tabela">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Gênero</th>
+                <th>Duração</th>
+                <th>Álbum</th>
+                <th>Artistas</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="lista-musicas">
+              <% for (const musica of musicas) { %>
+              <tr>
+                <td><%= musica.id %></td>
+                <td><%= musica.titulo %></td>
+                <td><%= musica.genero %></td>
+                <td><%= musica.duracao %></td>
+                <td><%= musica.album_titulo %></td>
+                <td><%= musica.artistas %></td>
+                <td class="acoes">
+                  <button class="btn-play" data-arquivo="<%= musica.arquivo %>">
+                    <i class="bx bx-play-circle"></i>
+                  </button>
+                  <button
+                    class="btn-delete"
+                    data-id="<%= musica.id %>"
+                    data-titulo="<%= musica.titulo %>"
+                  >
+                    <i class="bx bx-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+        <div class="controles">
+          <audio id="player" controls></audio>
+        </div>
+        <div class="voltar">
+          <a href="/">Voltar para Página Inicial</a>
+        </div>
+      </section>
+    </main>
+    <div class="modal" id="modal-delete" >
+      <div class="modal-content">
+        <h2>Confirmar Exclusão</h2>
+        <p>
+          Tem certeza que deseja excluir a música "<span
+            id="musica-titulo"
+          ></span
+          >"?
+        </p>
+        <div class="modal-buttons">
+          <button class="modal-btn cancelar" id="btn-cancelar">Cancelar</button>
+          <button class="modal-btn confirmar" id="btn-confirmar">
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const player = document.getElementById("player");
+      const botoes = document.querySelectorAll(".btn-play");
+      const busca = document.getElementById("busca-musica");
+      const linhas = document.querySelectorAll("#lista-musicas tr");
+
+      let playingButton = null;
+
+      // Função para atualizar o ícone do botão
+      function updateButtonIcon(button, isPlaying) {
+        button.innerHTML = isPlaying
+          ? '<i class="bx bx-pause-circle"></i>'
+          : '<i class="bx bx-play-circle"></i>';
+      }
+
+      // Controle de reprodução
+      botoes.forEach((botao) => {
+        botao.addEventListener("click", () => {
+          const arquivo = botao.dataset.arquivo;
+
+          if (playingButton === botao) {
+            // Mesmo botão - pausar/continuar
+            if (player.paused) {
+              player.play();
+              updateButtonIcon(botao, true);
+            } else {
+              player.pause();
+              updateButtonIcon(botao, false);
+            }
+          } else {
+            // Botão diferente - nova música
+            if (playingButton) {
+              updateButtonIcon(playingButton, false);
+            }
+            player.src = `/musicas/${arquivo}`;
+            player.play();
+            updateButtonIcon(botao, true);
+            playingButton = botao;
+          }
+        });
+      });
+
+      // Quando a música terminar
+      player.addEventListener("ended", () => {
+        if (playingButton) {
+          updateButtonIcon(playingButton, false);
+          playingButton = null;
+        }
+      });
+
+      // Filtro de busca
+      busca.addEventListener("input", () => {
+        const termo = busca.value.toLowerCase();
+
+        linhas.forEach((linha) => {
+          const texto = linha.textContent.toLowerCase();
+          linha.style.display = texto.includes(termo) ? "" : "none";
+        });
+      });
+
+      // Sistema de deleção
+      const modal = document.getElementById("modal-delete");
+      const musicaTitulo = document.getElementById("musica-titulo");
+      const btnCancelar = document.getElementById("btn-cancelar");
+      const btnConfirmar = document.getElementById("btn-confirmar");
+      let musicaIdParaDeletar = null;
+      let linhaDeletar = null;
+
+      // Fechar modal quando clicar fora
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          fecharModal();
+        }
+      });
+
+      function fecharModal() {
+        modal.classList.remove("active");
+        setTimeout(() => {
+          musicaIdParaDeletar = null;
+          linhaDeletar = null;
+        }, 300);
+      }
+
+      // Abrir modal de confirmação
+      document.querySelectorAll(".btn-delete").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          musicaIdParaDeletar = btn.dataset.id;
+          linhaDeletar = btn.closest("tr");
+          musicaTitulo.textContent = btn.dataset.titulo;
+          modal.classList.add("active");
+        });
+      });
+
+      // Fechar modal
+      btnCancelar.addEventListener("click", fecharModal);
+
+      // Confirmar deleção
+      btnConfirmar.addEventListener("click", async () => {
+        if (musicaIdParaDeletar && linhaDeletar) {
+          btnConfirmar.disabled = true;
+          btnConfirmar.textContent = "Deletando...";
+
+          try {
+            const response = await fetch(
+              `/deletar-musica/${musicaIdParaDeletar}`,
+              {
+                method: "DELETE",
+              }
+            );
+
+            if (response.ok) {
+              // Animação de fade out na linha
+              linhaDeletar.style.transition = "all 0.3s ease";
+              linhaDeletar.style.opacity = "0";
+              linhaDeletar.style.transform = "translateX(20px)";
+
+              setTimeout(() => {
+                linhaDeletar.remove();
+                fecharModal();
+              }, 300);
+            } else {
+              const data = await response.json();
+              throw new Error(data.error || "Erro ao deletar música");
+            }
+          } catch (error) {
+            console.error("Erro:", error);
+            alert(error.message || "Erro ao deletar música");
+          } finally {
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = "Excluir";
+          }
+        }
+      });
+
+      fecharModal()
+    </script>
+  </body>
+</html>

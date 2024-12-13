@@ -1,0 +1,243 @@
+@font-face {
+    font-family: "Atkinson Hyperlegible Regular";
+    src: url("/fontes/AtkinsonHyperlegible-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Atkinson Hyperlegible Bold"; 
+    src: url("/fontes/AtkinsonHyperlegible-Bold.ttf");
+}
+
+@font-face {
+    font-family: "Fira Mono Bold";
+    src: url("/fontes/FiraMono-Bold.ttf");
+}
+
+* {
+    margin: 0;
+    padding: 0; 
+    font-family: "Atkinson Hyperlegible Regular";
+}
+
+body {
+    background-color: #7500c3;
+    min-height: 100vh;
+}
+
+div.mobile-bar-fix {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
+i {
+    font-size: 1.5rem;
+    vertical-align: bottom;
+    margin: 0 .2rem;
+}
+
+i.bx-plus {
+    margin-left: -.5rem;
+    font-size: 1.2rem;
+    vertical-align: center;
+}
+
+header {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: rgb(9, 9, 9);
+}
+
+header h1 {
+    font-family: "Atkinson Hyperlegible Bold";
+    font-size: 1.8rem;
+}
+
+nav ul li {
+    display: inline-block;
+}
+
+nav a {
+    text-decoration: none;
+    padding: .4rem .6rem;
+    font-size: 1.2em;
+    transition: .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e0b0ff;
+    background-color: rgba(116, 30, 174, 0.2);
+    border-radius: 2rem;
+}
+
+nav a:hover {
+    background-color: #9b59b6;
+    color: white !important;
+}
+
+main {    
+    padding: 0 12rem;
+    box-sizing: border-box;
+}
+
+section.albums form {
+    display: none;
+}
+
+section.player {
+    background-color: #f8f0ff;
+    border-radius: 1.5rem;
+    box-shadow: rgba(117, 0, 195, 0.35) 0px 5px 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+section.player section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section.player h2.section-h2 {
+    font-family: "Atkinson Hyperlegible Bold";
+    margin-bottom: 1.5rem;
+    color: #7500c3;
+}
+
+.select-albums, .select-musicas {
+    width: 100%;
+}
+
+section.player select {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    border: 2px solid #9b59b6;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    height: 300px;
+}
+
+section.player select option {
+    padding: .4em;
+}
+
+input[type="search"] {
+    width: 100%;
+    padding: .8rem;
+    border: 1px solid #9b59b6;
+    border-radius: 8px;
+    background-color: rgba(117, 0, 195, 0.1);
+}
+
+section.controles {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+section.controles audio {
+    display: none;
+}
+
+input#seekbar[type="range"] {
+    width: 90%;
+    accent-color: #7500c3;
+    margin: 1rem 0;
+}
+
+section.controles > div {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Fira Mono Bold";
+    color: #7500c3;
+}
+
+section.controles > div > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.player-control {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.player-control i {
+    font-size: 2.5rem;
+    color: #9b59b6;
+}
+
+#play-pause {
+    background-color: rgba(117, 0, 195, 0.1);
+    padding: 1rem;
+}
+
+#play-pause i {
+    font-size: 4rem;
+}
+
+#play-pause:hover {
+    background-color: rgba(117, 0, 195, 0.2);
+}
+
+input#player-volume[type="range"] {
+    width: 100px;
+    accent-color: #7500c3;
+}
+
+@media screen and (max-width: 1000px) {
+    main {
+        padding: 0 4rem;
+    }
+    nav a {
+        font-size: 0;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    main {
+        padding: 0 2rem;
+    }
+    section.player {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    main {
+        padding: 0;
+    }
+    section.player {
+        border-radius: 0;
+        padding: 1rem;
+    }
+    section.controles > div {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
